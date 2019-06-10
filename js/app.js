@@ -8,8 +8,8 @@ const gameBoard = (() => {
     } else {
       _board[cellId] = player;
       gameController.switchCurrentPlayer();
-      gameController.renderBoard(_board);
       gameController.checkGameStatus(_board);
+      gameController.renderBoard(_board);
     }
   };
 
@@ -20,18 +20,25 @@ const gameBoard = (() => {
 })();
 
 
+const playerFactory = (name, mark) => {
+  const getMark = () => mark;
+  const getName = () => name;
+  return { getMark, getName };
+};
+
+
 const gameController = (() => {
 
-  // player 'x' is true
-  // player 'o' is false
-  let _currentPlayer = true;
+  let _playerX,
+      _playerO,
+      _currentPlayer;
 
   const getCurrentPlayer = () => {
-    return _currentPlayer ? 'x' : 'o';
+    return _currentPlayer;
   }
 
   const switchCurrentPlayer = () => {
-    _currentPlayer = !_currentPlayer;
+    _currentPlayer = _currentPlayer == _playerX ? _playerO : _playerX;
   }
 
   const renderBoard = (board) => {
@@ -40,11 +47,11 @@ const gameController = (() => {
       <div class="board-cell" data-id="${index}" onclick="gameController.handleCellClick(this)">${cell}</div>
     `));
     gameBoardElement.innerHTML = cells.join('');
-    renderStatus('Player "' + getCurrentPlayer() + '" plays:');
+    renderStatus('Player ' + getCurrentPlayer().getName() + ' plays:');
   };
 
   const handleCellClick = (cell) => {
-    gameBoard.placeMark(getCurrentPlayer(), cell.dataset.id);
+    gameBoard.placeMark(getCurrentPlayer().getMark(), cell.dataset.id);
   }
 
   const renderStatus = (status) => {
@@ -86,9 +93,22 @@ const gameController = (() => {
       cell.onclick = null;
     });
 
-    let endStatus = status == "tie" ? "Game over! It's a tie" : `Game over! Player ${status[0]} won`;
+    let endStatus = status == "tie" ? "Game over! It's a tie" : `Game over! Player ${_currentPlayer.getName()} won`;
 
     renderStatus(endStatus);
+  }
+
+  const startGame = (e) => {
+    e.preventDefault();
+    e.target[3].style.display = "none";
+    
+
+    let players = e.target.elements;
+    _playerX = playerFactory(players["playerX"].value, 'x');
+    _playerO = playerFactory(players["playerO"].value, 'o');
+    _currentPlayer = _playerX;    
+
+    renderBoard(gameBoard.getBoard());
   }
 
   return {
@@ -97,11 +117,10 @@ const gameController = (() => {
     switchCurrentPlayer,
     handleCellClick,
     checkGameStatus,
-    renderStatus
+    renderStatus,
+    startGame
   };
 })();
 
 
-function render() {
-  gameController.renderBoard(gameBoard.getBoard());
-}
+document.getElementById('usersNames').onsubmit = gameController.startGame;
