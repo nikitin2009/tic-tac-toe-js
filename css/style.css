@@ -9,6 +9,12 @@ body {
   margin: 0 auto;
 }
 
+#status {
+  text-align: center;
+  background-color: #fff;
+  padding: 15px 5px;
+}
+
 #gameBoard {
   max-width: 450px;
   margin: 0 auto;
@@ -30,5 +36,5 @@ body {
 }
 
 .board-cell:hover {
-  cursor: pinter;
+  cursor: pointer;
 }
