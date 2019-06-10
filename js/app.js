@@ -1,9 +1,5 @@
 const gameBoard = (() => {
-  const _board = [
-    ['-', '-', '-'],
-    ['-', '-', '-'],
-    ['-', '-', '-']
-  ];
+  const _board = new Array(9);
 
   const getBoard = () => _board;
 
@@ -30,3 +26,8 @@ const playerFactory = (name) => {
     name
   };
 };
+
+
+function render() {
+  displayController.renderBoard(gameBoard.getBoard());
+}
