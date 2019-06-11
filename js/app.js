@@ -2,14 +2,12 @@ const gameBoard = (() => {
   const _board = ['', '', '', '', '', '', '', '', ''];
 
   const getBoard = () => _board;
-  const placeMark = (player, cellId) => {
+  const placeMark = (mark, cellId) => {
     if (_board[cellId]) {
-      gameController.renderStatus(`The cell is occupied, try another one! Player ${player} plays:`);
+      return false
     } else {
-      _board[cellId] = player;
-      gameController.switchCurrentPlayer();
-      gameController.checkGameStatus(_board);
-      gameController.renderBoard(_board);
+      _board[cellId] = mark;
+      return _board;
     }
   };
 
@@ -47,19 +45,29 @@ const gameController = (() => {
       <div class="board-cell" data-id="${index}" onclick="gameController.handleCellClick(this)">${cell}</div>
     `));
     gameBoardElement.innerHTML = cells.join('');
-    renderStatus('Player ' + getCurrentPlayer().getName() + ' plays:');
   };
 
   const handleCellClick = (cell) => {
-    gameBoard.placeMark(getCurrentPlayer().getMark(), cell.dataset.id);
+    let board = gameBoard.placeMark(getCurrentPlayer().getMark(), cell.dataset.id);
+    if (board) {
+      renderBoard(board);
+      let status = checkGameStatus(board);
+
+      if (!status){
+        switchCurrentPlayer();
+        renderStatus('Player ' + getCurrentPlayer().getName() + ' plays:');
+      }
+    } else {
+      renderStatus(`The cell is occupied, try another one! Player ${getCurrentPlayer().getName()} plays:`);
+    }
   }
 
   const renderStatus = (status) => {
     document.getElementById('status').innerText = status;
   }
 
-  const checkGameStatus = (board) => {
-    let won = false;
+  const isWin = (board) => {
+    let win = false;
     const lines = {
       top:                    [ board[0], board[1], board[2] ],
       middle:                 [ board[3], board[4], board[5] ],
@@ -74,41 +82,54 @@ const gameController = (() => {
       let xWon = line.every(cell => cell == 'x');
       let oWon = line.every(cell => cell == 'o');
       if (xWon || oWon) {
-        won = true;
-        finishGame(line);
+        win = true;
       }
     });
+    return win
+  }
 
-    if (won) return;
+  const checkGameStatus = (board) => {
+    let win = isWin(board);
+    let tie = board.every(cell => cell) ? 'tie' : false;
+    let status = win || tie
 
-    let tie = board.every(cell => cell);
-    if (tie) {
-      finishGame("tie");
+    if (win || tie) {
+      finishGame(status);
     }
-
+    
+    return status;
   };
-
+  
   const finishGame = (status) => {
     [...document.getElementsByClassName('board-cell')].forEach(cell => {
       cell.onclick = null;
     });
 
     let endStatus = status == "tie" ? "Game over! It's a tie" : `Game over! Player ${_currentPlayer.getName()} won`;
+    endStatus += " (Press F5 to restart the game)";
 
     renderStatus(endStatus);
   }
 
   const startGame = (e) => {
     e.preventDefault();
-    e.target[3].style.display = "none";
-    
 
     let players = e.target.elements;
     _playerX = playerFactory(players["playerX"].value, 'x');
     _playerO = playerFactory(players["playerO"].value, 'o');
-    _currentPlayer = _playerX;    
+    _currentPlayer = _playerX; 
+    
+    let info = document.getElementById('info');
+    info.innerHTML = `
+      <h3>Game info:</h3>
+      Player 'x': ${_playerX.getName()}<br>
+      Player 'o': ${_playerO.getName()}
+    `;
+    info.style.display = "block";
+    e.target.style.display = "none";
 
     renderBoard(gameBoard.getBoard());
+    renderStatus('Player ' + getCurrentPlayer().getName() + ' plays:');
   }
 
   return {

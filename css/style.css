@@ -9,6 +9,12 @@ body {
   margin: 0 auto;
 }
 
+#info {
+  display: none;
+  background-color: #fff;
+  padding: 15px 5px;
+}
+
 #status {
   text-align: center;
   background-color: #fff;
