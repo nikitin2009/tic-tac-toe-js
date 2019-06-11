@@ -36,7 +36,7 @@ const gameController = (() => {
   }
 
   const switchCurrentPlayer = () => {
-    _currentPlayer = _currentPlayer == _playerX ? _playerO : _playerX;
+    _currentPlayer = _currentPlayer === _playerX ? _playerO : _playerX;
   }
 
   const renderBoard = (board) => {
