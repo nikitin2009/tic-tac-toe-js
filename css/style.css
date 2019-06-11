@@ -1,0 +1,52 @@
+body {
+  background-color: #563d7c;
+}
+
+.container {
+  max-width: 980px;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: 0 auto;
+}
+
+#info {
+  display: none;
+  background-color: #fff;
+  padding: 15px 5px;
+}
+
+#status {
+  text-align: center;
+  background-color: #fff;
+  padding: 15px 5px;
+}
+
+#usersNames {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+#gameBoard {
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: #fff;
+  display: grid;
+  grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+  grid-gap: 10px;
+}
+
+.board-cell {
+  font-family: cursive;
+  font-size: 60px;
+  color: coral;
+  text-align: center;
+  line-height: 100px;
+  height: 100px;
+  background-color: #eee;
+}
+
+.board-cell:hover {
+  cursor: pointer;
+}
